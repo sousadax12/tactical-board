@@ -11,11 +11,8 @@ export interface PlayerTokenProps {
   onDragEnd: (id: ID, normX: number, normY: number) => void
 }
 
-const RADIUS = 20
+const BASE_RADIUS = 20
 
-/**
- * Clamps a normalized coordinate to [0..1].
- */
 function clampNorm(value: number): number {
   return Math.min(1, Math.max(0, value))
 }
@@ -27,25 +24,20 @@ export default function PlayerToken({
   onSelect,
   onDragEnd,
 }: PlayerTokenProps) {
+  const r = BASE_RADIUS * scale.scaleFactor
+  const fontSize = Math.round(14 * scale.scaleFactor)
   const strokeColor = isSelected ? '#FFD700' : '#FFFFFF'
-  const strokeWidth = isSelected ? 3 : 2
+  const strokeWidth = (isSelected ? 3 : 2) * scale.scaleFactor
 
   const handleDragEnd = (e: Konva.KonvaEventObject<DragEvent>) => {
-    const rawNormX = scale.toNormX(e.target.x())
-    const rawNormY = scale.toNormY(e.target.y())
-    const normX = clampNorm(rawNormX)
-    const normY = clampNorm(rawNormY)
-
-    // Snap back to clamped pixel position so the token stays within the court
+    const normX = clampNorm(scale.toNormX(e.target.x()))
+    const normY = clampNorm(scale.toNormY(e.target.y()))
     e.target.x(scale.toPixelX(normX))
     e.target.y(scale.toPixelY(normY))
-
     onDragEnd(player.id, normX, normY)
   }
 
-  const handleClick = () => {
-    onSelect(player.id)
-  }
+  const handleClick = () => onSelect(player.id)
 
   return (
     <Group
@@ -56,23 +48,16 @@ export default function PlayerToken({
       onClick={handleClick}
       onTap={handleClick}
     >
-      <Circle
-        x={0}
-        y={0}
-        radius={RADIUS}
-        fill={player.color}
-        stroke={strokeColor}
-        strokeWidth={strokeWidth}
-      />
+      <Circle radius={r} fill={player.color} stroke={strokeColor} strokeWidth={strokeWidth} />
       <Text
-        x={-RADIUS}
-        y={-7}
-        width={RADIUS * 2}
-        height={14}
+        x={-r}
+        y={-fontSize * 0.5}
+        width={r * 2}
+        height={fontSize}
         text={String(player.number)}
         fill="#FFFFFF"
         fontStyle="bold"
-        fontSize={14}
+        fontSize={fontSize}
         align="center"
         verticalAlign="middle"
         listening={false}

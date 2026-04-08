@@ -28,9 +28,8 @@ export default function AnnotationRenderer({
   isSelected,
   onSelect,
 }: AnnotationRendererProps): React.ReactElement | null {
-  const handleClick = (): void => {
-    onSelect(annotation.id)
-  }
+  const sf = scale.scaleFactor
+  const handleClick = (): void => onSelect(annotation.id)
 
   switch (annotation.type) {
     case 'arrow': {
@@ -38,15 +37,16 @@ export default function AnnotationRenderer({
         scale.toPixelX(p.x),
         scale.toPixelY(p.y),
       ])
+      const sw = annotation.strokeWidth * sf
       return (
         <Arrow
           points={points}
           stroke={annotation.color}
-          strokeWidth={isSelected ? annotation.strokeWidth + 2 : annotation.strokeWidth}
+          strokeWidth={isSelected ? sw + 2 * sf : sw}
           fill={annotation.color}
-          dash={annotation.dashed ? [8, 4] : undefined}
-          pointerLength={10}
-          pointerWidth={8}
+          dash={annotation.dashed ? [8 * sf, 4 * sf] : undefined}
+          pointerLength={10 * sf}
+          pointerWidth={8 * sf}
           lineCap="round"
           lineJoin="round"
           shadowColor={isSelected ? annotation.color : undefined}
@@ -62,12 +62,13 @@ export default function AnnotationRenderer({
         scale.toPixelX(p.x),
         scale.toPixelY(p.y),
       ])
+      const sw = annotation.strokeWidth * sf
       return (
         <Line
           points={points}
           stroke={annotation.color}
-          strokeWidth={isSelected ? annotation.strokeWidth + 2 : annotation.strokeWidth}
-          dash={annotation.dashed ? [8, 4] : undefined}
+          strokeWidth={isSelected ? sw + 2 * sf : sw}
+          dash={annotation.dashed ? [8 * sf, 4 * sf] : undefined}
           lineCap="round"
           lineJoin="round"
           shadowColor={isSelected ? annotation.color : undefined}
@@ -92,8 +93,8 @@ export default function AnnotationRenderer({
           fill={annotation.color}
           opacity={annotation.opacity}
           stroke={isSelected ? '#fff' : darkenColor(annotation.color)}
-          strokeWidth={isSelected ? 2 : 1}
-          dash={isSelected ? [6, 3] : undefined}
+          strokeWidth={isSelected ? 2 * sf : sf}
+          dash={isSelected ? [6 * sf, 3 * sf] : undefined}
           onClick={handleClick}
           onTap={handleClick}
         />
@@ -109,7 +110,7 @@ export default function AnnotationRenderer({
           y={py}
           text={annotation.text}
           fill={annotation.color}
-          fontSize={annotation.fontSize}
+          fontSize={annotation.fontSize * sf}
           fontStyle={isSelected ? 'bold' : 'normal'}
           shadowColor={isSelected ? annotation.color : undefined}
           shadowBlur={isSelected ? 6 : 0}

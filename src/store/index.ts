@@ -1,4 +1,6 @@
 export { useBoardStore } from './boardSlice'
 export { useLibraryStore } from './librarySlice'
+export { useAnimationStore } from './animationSlice'
 export type { BoardStoreState } from './boardSlice'
 export type { LibraryStoreState } from './librarySlice'
+export type { AnimationStoreState } from './animationSlice'

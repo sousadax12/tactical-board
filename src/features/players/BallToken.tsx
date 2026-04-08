@@ -9,10 +9,10 @@ interface BallTokenProps {
   onDragEnd: (normX: number, normY: number) => void
 }
 
-const BALL_RADIUS = 14
+const BASE_BALL_RADIUS = 14
 
 export default function BallToken({ ball, scale, onDragEnd }: BallTokenProps) {
-  const r = BALL_RADIUS
+  const r = BASE_BALL_RADIUS * scale.scaleFactor
   const cx = scale.toPixelX(ball.x)
   const cy = scale.toPixelY(ball.y)
 

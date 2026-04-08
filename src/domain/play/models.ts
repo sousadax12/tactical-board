@@ -84,6 +84,7 @@ export type Annotation =
 export interface PlayFrame {
   id: ID
   players: PlayerModel[]
+  ball: BallModel | null
   annotations: Annotation[]
 }
 

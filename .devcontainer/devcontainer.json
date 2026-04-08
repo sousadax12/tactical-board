@@ -1,0 +1,59 @@
+{
+  "name": "Handball Tactical Board",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "version": "latest",
+      "enableNonRootDocker": "true",
+      "moby": true,
+      "dockerDashComposeVersion": "v2"
+    }
+  },
+
+  "postCreateCommand": "mkdir -p /home/node/.claude && echo '{\"hasCompletedOnboarding\":true}' > /home/node/.claude.json",
+
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": "explicit"
+        },
+        "typescript.tsdk": "node_modules/typescript/lib",
+        "typescript.enablePromptUseWorkspaceTsdk": true,
+        "claudeCode.allowDangerouslySkipPermissions": true,
+        "claudeCode.initialPermissionMode": "bypassPermissions",
+        "claudeCode.hideOnboarding": true
+      },
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "ms-azuretools.vscode-docker",
+        "mongodb.mongodb-vscode",
+        "ms-vscode.vscode-typescript-next",
+        "christian-kohler.npm-intellisense",
+        "mikestead.dotenv",
+        "Anthropic.claude-code",
+        "humao.rest-client"
+      ]
+    }
+  },
+
+  "forwardPorts": [3000],
+
+  "portsAttributes": {
+    "3000": { "label": "Application", "onAutoForward": "notify" },
+  },
+
+  "remoteUser": "node",
+
+  "remoteEnv": {
+    "NODE_ENV": "development",
+    "CLAUDE_CODE_OAUTH_TOKEN": "${localEnv:CLAUDE_CODE_OAUTH_TOKEN}",
+    "CONTEXT7_API_KEY": "${localEnv:CONTEXT7_API_KEY}"
+  }
+}

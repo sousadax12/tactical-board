@@ -175,6 +175,7 @@ export default function DrawingLayer({ scale }: DrawingLayerProps): React.ReactE
   }
 
   // ── Preview line while building arrow/line ────────────────────────────────
+  const sf = scale.scaleFactor
   const previewPoints =
     drawingPoints.length >= 1
       ? drawingPoints.flatMap((p) => [scale.toPixelX(p.x), scale.toPixelY(p.y)])
@@ -212,9 +213,9 @@ export default function DrawingLayer({ scale }: DrawingLayerProps): React.ReactE
         <Line
           points={previewPoints}
           stroke={DEFAULT_ARROW_COLOR}
-          strokeWidth={DEFAULT_STROKE_WIDTH}
+          strokeWidth={DEFAULT_STROKE_WIDTH * sf}
           opacity={0.6}
-          dash={[6, 3]}
+          dash={[6 * sf, 3 * sf]}
           lineCap="round"
           lineJoin="round"
           listening={false}

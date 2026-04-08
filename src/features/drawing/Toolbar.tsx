@@ -1,5 +1,5 @@
 import React from 'react'
-import { useBoardStore } from '../../store'
+import { useBoardStore, useAnimationStore } from '../../store'
 import type { DrawingToolType } from '../../domain/play/models'
 
 interface ToolDef {
@@ -92,7 +92,11 @@ const styles = {
   },
 }
 
-export default function Toolbar(): React.ReactElement {
+interface ToolbarProps {
+  onEnterViewMode?: () => void
+}
+
+export default function Toolbar({ onEnterViewMode }: ToolbarProps): React.ReactElement {
   const activeTool = useBoardStore((s) => s.activeTool)
   const setActiveTool = useBoardStore((s) => s.setActiveTool)
   const undo = useBoardStore((s) => s.undo)
@@ -100,6 +104,7 @@ export default function Toolbar(): React.ReactElement {
   const clearBoard = useBoardStore((s) => s.clearBoard)
   const past = useBoardStore((s) => s.past)
   const future = useBoardStore((s) => s.future)
+  const isPlaying = useAnimationStore((s) => s.isPlaying)
 
   const handleClear = (): void => {
     if (window.confirm('Clear all annotations and players?')) {
@@ -161,6 +166,40 @@ export default function Toolbar(): React.ReactElement {
         <span style={styles.icon}>✕</span>
         <span>Clear</span>
       </button>
+
+      {isPlaying && (
+        <span
+          style={{
+            background: '#c0392b',
+            color: '#fff',
+            padding: '4px 8px',
+            borderRadius: '4px',
+            fontSize: '11px',
+            fontWeight: 700,
+          }}
+        >
+          ● PLAYING
+        </span>
+      )}
+
+      {onEnterViewMode && (
+        <>
+          <div style={{ flex: 1 }} />
+          <button
+            style={{
+              ...styles.actionButton,
+              background: '#1e3a5f',
+              border: '1px solid #2d6a9f',
+              color: '#7ec8f0',
+            }}
+            onClick={onEnterViewMode}
+            title="View Mode — maximize pitch"
+          >
+            <span style={styles.icon}>⛶</span>
+            <span>View</span>
+          </button>
+        </>
+      )}
     </div>
   )
 }

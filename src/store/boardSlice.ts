@@ -234,6 +234,7 @@ export const useBoardStore = create<BoardStoreState>()(
     loadFrame(frame) {
       set((draft) => {
         draft.players = frame.players.map((p) => ({ ...p }))
+        draft.ball = frame.ball ? { ...frame.ball } : null
         draft.annotations = frame.annotations.map((a) => ({ ...a }))
         draft.past = []
         draft.future = []

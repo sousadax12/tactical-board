@@ -121,6 +121,7 @@ export default function LibraryPanel() {
     const frame: PlayFrame = {
       id: nanoid(),
       players: boardState.players.map((p) => ({ ...p })),
+      ball: boardState.ball ? { ...boardState.ball } : null,
       annotations: boardState.annotations.map((a) => ({ ...a })),
     }
 
