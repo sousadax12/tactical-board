@@ -30,6 +30,9 @@ export interface BoardStoreState {
   past: Snapshot[]
   /** Redo stack — each entry is a snapshot taken before the undo */
   future: Snapshot[]
+  boardName: string
+  boardDescription: string
+  boardTags: string[]
 
   // Actions
   addPlayer: (player: PlayerModel) => void
@@ -49,6 +52,9 @@ export interface BoardStoreState {
   redo: () => void
   clearBoard: () => void
   loadFrame: (frame: PlayFrame) => void
+  setBoardName: (name: string) => void
+  setBoardDescription: (description: string) => void
+  setBoardTags: (tags: string[]) => void
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -87,6 +93,9 @@ export const useBoardStore = create<BoardStoreState>()(
     drawingPoints: [],
     past: [],
     future: [],
+    boardName: '',
+    boardDescription: '',
+    boardTags: [],
 
     // ── Player actions ─────────────────────────────────────────────────────
 
@@ -246,6 +255,27 @@ export const useBoardStore = create<BoardStoreState>()(
         draft.future = []
         draft.selectedId = null
         draft.drawingPoints = []
+        draft.boardName = ''
+        draft.boardDescription = ''
+        draft.boardTags = []
+      })
+    },
+
+    setBoardName(name) {
+      set((draft) => {
+        draft.boardName = name
+      })
+    },
+
+    setBoardDescription(description) {
+      set((draft) => {
+        draft.boardDescription = description
+      })
+    },
+
+    setBoardTags(tags) {
+      set((draft) => {
+        draft.boardTags = tags
       })
     },
 

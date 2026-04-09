@@ -13,6 +13,9 @@ function loadTemplate(play: Play, onClose: () => void): void {
   play.frames.forEach((f) => anim.addFrame(f))
   anim.setCurrentFrameIndex(0)
   useBoardStore.getState().loadFrame(play.frames[0])
+  useBoardStore.getState().setBoardName(play.name)
+  useBoardStore.getState().setBoardDescription(play.description)
+  useBoardStore.getState().setBoardTags(play.tags)
   onClose()
 }
 

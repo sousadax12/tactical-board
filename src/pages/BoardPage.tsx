@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import Konva from 'konva'
 import { Stage } from 'react-konva'
 import { Toolbar, DrawingLayer } from '../features/drawing'
@@ -8,6 +8,16 @@ import { TimelinePanel, ViewModeOverlay, usePlayback } from '../features/animati
 import { useCourtScale } from '../hooks/useCourtScale'
 import { useBoardStore } from '../store'
 import type { ID } from '../domain/play/models'
+
+const infoInputBase: React.CSSProperties = {
+  background: '#0d0d1e',
+  border: '1px solid #2a2a4e',
+  borderRadius: '5px',
+  color: '#c0c0e0',
+  fontSize: '12px',
+  padding: '5px 10px',
+  outline: 'none',
+}
 
 interface EditState {
   id: ID
@@ -23,6 +33,12 @@ export default function BoardPage() {
   const [viewMode, setViewMode] = useState(false)
   const [editState, setEditState] = useState<EditState | null>(null)
   const updatePlayer = useBoardStore((s) => s.updatePlayer)
+  const boardName = useBoardStore((s) => s.boardName)
+  const setBoardName = useBoardStore((s) => s.setBoardName)
+  const boardDescription = useBoardStore((s) => s.boardDescription)
+  const setBoardDescription = useBoardStore((s) => s.setBoardDescription)
+  const boardTags = useBoardStore((s) => s.boardTags)
+  const setBoardTags = useBoardStore((s) => s.setBoardTags)
   usePlayback()
 
   const handleStartEdit = (id: ID, pixelX: number, pixelY: number, label: string) => {
@@ -45,6 +61,60 @@ export default function BoardPage() {
       <div style={{ display: viewMode ? 'none' : 'block' }}>
         <Toolbar onEnterViewMode={() => setViewMode(true)} stageRef={stageRef} />
       </div>
+
+      {/* Board info bar — hidden in view mode */}
+      {!viewMode && (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '6px 12px',
+            background: '#13132a',
+            borderBottom: '1px solid #222240',
+          }}
+        >
+          <input
+            type="text"
+            value={boardName}
+            onChange={(e) => setBoardName(e.target.value)}
+            placeholder="Untitled play"
+            style={{
+              ...infoInputBase,
+              flex: '0 0 auto',
+              width: '200px',
+              color: '#e0e0ff',
+              fontSize: '13px',
+              fontWeight: 600,
+              border: '1px solid #3d3d6e',
+            }}
+            title="Play name"
+          />
+          <input
+            type="text"
+            value={boardDescription}
+            onChange={(e) => setBoardDescription(e.target.value)}
+            placeholder="Description"
+            style={{ ...infoInputBase, flex: 1 }}
+            title="Description"
+          />
+          <input
+            type="text"
+            value={boardTags.join(', ')}
+            onChange={(e) =>
+              setBoardTags(
+                e.target.value
+                  .split(',')
+                  .map((t) => t.trim())
+                  .filter(Boolean),
+              )
+            }
+            placeholder="Tags (comma separated)"
+            style={{ ...infoInputBase, flex: '0 0 auto', width: '220px' }}
+            title="Tags"
+          />
+        </div>
+      )}
 
       {/* Animation bar — hidden in view mode */}
       <div style={{ display: viewMode ? 'none' : 'block' }}>

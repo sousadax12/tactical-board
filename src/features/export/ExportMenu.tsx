@@ -21,6 +21,9 @@ export default function ExportMenu({ stageRef }: ExportMenuProps): React.ReactEl
   const players = useBoardStore((s) => s.players)
   const balls = useBoardStore((s) => s.balls)
   const annotations = useBoardStore((s) => s.annotations)
+  const boardName = useBoardStore((s) => s.boardName)
+  const boardDescription = useBoardStore((s) => s.boardDescription)
+  const boardTags = useBoardStore((s) => s.boardTags)
   const frames = useAnimationStore((s) => s.frames)
 
   useEffect(() => {
@@ -37,7 +40,7 @@ export default function ExportMenu({ stageRef }: ExportMenuProps): React.ReactEl
   function handleDownloadPng() {
     const stage = stageRef.current
     if (!stage) return
-    exportAsPng(stage, 'tactical-play')
+    exportAsPng(stage, (boardName || 'tactical-play').replace(/\s+/g, '_'))
     setOpen(false)
   }
 
@@ -52,12 +55,12 @@ export default function ExportMenu({ stageRef }: ExportMenuProps): React.ReactEl
     const shareFrames = frames.length > 0 ? frames : [boardFrame]
     return {
       id: crypto.randomUUID(),
-      name: 'Shared Play',
-      description: '',
+      name: boardName || 'Tactical Play',
+      description: boardDescription,
       createdAt: now,
       updatedAt: now,
       frames: shareFrames,
-      tags: [],
+      tags: boardTags,
     }
   }
 
@@ -92,6 +95,9 @@ export default function ExportMenu({ stageRef }: ExportMenuProps): React.ReactEl
         play.frames.forEach((f) => anim.addFrame(f))
         anim.setCurrentFrameIndex(0)
         useBoardStore.getState().loadFrame(play.frames[0])
+        useBoardStore.getState().setBoardName(play.name)
+        useBoardStore.getState().setBoardDescription(play.description)
+        useBoardStore.getState().setBoardTags(play.tags)
       } catch {
         setWarning('Could not read file — make sure it is valid JSON')
         setTimeout(() => setWarning(''), 4000)
