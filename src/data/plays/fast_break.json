@@ -1,0 +1,150 @@
+{
+  "id": "template-fast-break",
+  "name": "Fast Break Counter-Attack",
+  "description": "Quick transition from defense to attack after GK wins possession — 6-frame progression showing 3v2 advantage",
+  "createdAt": 1700000100000,
+  "updatedAt": 1700000100000,
+  "tags": ["fast-break", "attack", "transition", "template"],
+  "frames": [
+    {
+      "id": "fb-f1",
+      "players": [
+        { "id": "fb-h0", "teamSide": "home", "number": 1, "label": "GK", "x": 0.04, "y": 0.50, "color": "#4488ff" },
+        { "id": "fb-h1", "teamSide": "home", "number": 11, "label": "LW", "x": 0.38, "y": 0.08, "color": "#4488ff" },
+        { "id": "fb-h2", "teamSide": "home", "number": 7,  "label": "LB", "x": 0.28, "y": 0.30, "color": "#4488ff" },
+        { "id": "fb-h3", "teamSide": "home", "number": 10, "label": "CB", "x": 0.25, "y": 0.50, "color": "#4488ff" },
+        { "id": "fb-h4", "teamSide": "home", "number": 8,  "label": "RB", "x": 0.28, "y": 0.70, "color": "#4488ff" },
+        { "id": "fb-h5", "teamSide": "home", "number": 14, "label": "RW", "x": 0.38, "y": 0.92, "color": "#4488ff" },
+        { "id": "fb-h6", "teamSide": "home", "number": 9,  "label": "PV", "x": 0.30, "y": 0.50, "color": "#4488ff" },
+        { "id": "fb-a0", "teamSide": "away", "number": 1,  "label": "GK", "x": 0.96, "y": 0.50, "color": "#ff4444" },
+        { "id": "fb-a1", "teamSide": "away", "number": 11, "label": "LE", "x": 0.45, "y": 0.15, "color": "#ff4444" },
+        { "id": "fb-a2", "teamSide": "away", "number": 7,  "label": "LH", "x": 0.40, "y": 0.32, "color": "#ff4444" },
+        { "id": "fb-a3", "teamSide": "away", "number": 5,  "label": "LC", "x": 0.38, "y": 0.45, "color": "#ff4444" },
+        { "id": "fb-a4", "teamSide": "away", "number": 6,  "label": "RC", "x": 0.38, "y": 0.55, "color": "#ff4444" },
+        { "id": "fb-a5", "teamSide": "away", "number": 8,  "label": "RH", "x": 0.40, "y": 0.68, "color": "#ff4444" },
+        { "id": "fb-a6", "teamSide": "away", "number": 14, "label": "RE", "x": 0.45, "y": 0.85, "color": "#ff4444" }
+      ],
+      "ball": { "x": 0.04, "y": 0.50 },
+      "annotations": [
+        { "id": "a1", "type": "zone", "x": 0.04, "y": 0.10, "width": 0.60, "height": 0.80, "color": "#4488ff", "opacity": 0.10 }
+      ]
+    },
+    {
+      "id": "fb-f2",
+      "players": [
+        { "id": "fb-h0", "teamSide": "home", "number": 1,  "label": "GK", "x": 0.06, "y": 0.50, "color": "#4488ff" },
+        { "id": "fb-h1", "teamSide": "home", "number": 11, "label": "LW", "x": 0.52, "y": 0.08, "color": "#4488ff" },
+        { "id": "fb-h2", "teamSide": "home", "number": 7,  "label": "LB", "x": 0.38, "y": 0.28, "color": "#4488ff" },
+        { "id": "fb-h3", "teamSide": "home", "number": 10, "label": "CB", "x": 0.35, "y": 0.48, "color": "#4488ff" },
+        { "id": "fb-h4", "teamSide": "home", "number": 8,  "label": "RB", "x": 0.38, "y": 0.72, "color": "#4488ff" },
+        { "id": "fb-h5", "teamSide": "home", "number": 14, "label": "RW", "x": 0.52, "y": 0.92, "color": "#4488ff" },
+        { "id": "fb-h6", "teamSide": "home", "number": 9,  "label": "PV", "x": 0.45, "y": 0.50, "color": "#4488ff" },
+        { "id": "fb-a0", "teamSide": "away", "number": 1,  "label": "GK", "x": 0.96, "y": 0.50, "color": "#ff4444" },
+        { "id": "fb-a1", "teamSide": "away", "number": 11, "label": "LE", "x": 0.60, "y": 0.18, "color": "#ff4444" },
+        { "id": "fb-a2", "teamSide": "away", "number": 7,  "label": "LH", "x": 0.55, "y": 0.32, "color": "#ff4444" },
+        { "id": "fb-a3", "teamSide": "away", "number": 5,  "label": "LC", "x": 0.55, "y": 0.46, "color": "#ff4444" },
+        { "id": "fb-a4", "teamSide": "away", "number": 6,  "label": "RC", "x": 0.55, "y": 0.54, "color": "#ff4444" },
+        { "id": "fb-a5", "teamSide": "away", "number": 8,  "label": "RH", "x": 0.55, "y": 0.68, "color": "#ff4444" },
+        { "id": "fb-a6", "teamSide": "away", "number": 14, "label": "RE", "x": 0.60, "y": 0.82, "color": "#ff4444" }
+      ],
+      "ball": { "x": 0.35, "y": 0.48 },
+      "annotations": [
+        { "id": "a1", "type": "arrow", "points": [{"x": 0.06, "y": 0.50}, {"x": 0.35, "y": 0.48}], "color": "#ff8800", "strokeWidth": 3, "dashed": false }
+      ]
+    },
+    {
+      "id": "fb-f3",
+      "players": [
+        { "id": "fb-h0", "teamSide": "home", "number": 1,  "label": "GK", "x": 0.08, "y": 0.50, "color": "#4488ff" },
+        { "id": "fb-h1", "teamSide": "home", "number": 11, "label": "LW", "x": 0.65, "y": 0.08, "color": "#4488ff" },
+        { "id": "fb-h2", "teamSide": "home", "number": 7,  "label": "LB", "x": 0.50, "y": 0.28, "color": "#4488ff" },
+        { "id": "fb-h3", "teamSide": "home", "number": 10, "label": "CB", "x": 0.55, "y": 0.48, "color": "#4488ff" },
+        { "id": "fb-h4", "teamSide": "home", "number": 8,  "label": "RB", "x": 0.50, "y": 0.72, "color": "#4488ff" },
+        { "id": "fb-h5", "teamSide": "home", "number": 14, "label": "RW", "x": 0.65, "y": 0.92, "color": "#4488ff" },
+        { "id": "fb-h6", "teamSide": "home", "number": 9,  "label": "PV", "x": 0.62, "y": 0.50, "color": "#4488ff" },
+        { "id": "fb-a0", "teamSide": "away", "number": 1,  "label": "GK", "x": 0.96, "y": 0.50, "color": "#ff4444" },
+        { "id": "fb-a1", "teamSide": "away", "number": 11, "label": "LE", "x": 0.72, "y": 0.18, "color": "#ff4444" },
+        { "id": "fb-a2", "teamSide": "away", "number": 7,  "label": "LH", "x": 0.85, "y": 0.30, "color": "#ff4444" },
+        { "id": "fb-a3", "teamSide": "away", "number": 5,  "label": "LC", "x": 0.83, "y": 0.45, "color": "#ff4444" },
+        { "id": "fb-a4", "teamSide": "away", "number": 6,  "label": "RC", "x": 0.83, "y": 0.55, "color": "#ff4444" },
+        { "id": "fb-a5", "teamSide": "away", "number": 8,  "label": "RH", "x": 0.85, "y": 0.70, "color": "#ff4444" },
+        { "id": "fb-a6", "teamSide": "away", "number": 14, "label": "RE", "x": 0.72, "y": 0.82, "color": "#ff4444" }
+      ],
+      "ball": { "x": 0.55, "y": 0.48 },
+      "annotations": [
+        { "id": "a1", "type": "arrow", "points": [{"x": 0.35, "y": 0.48}, {"x": 0.55, "y": 0.48}], "color": "#ff8800", "strokeWidth": 3, "dashed": true }
+      ]
+    },
+    {
+      "id": "fb-f4",
+      "players": [
+        { "id": "fb-h0", "teamSide": "home", "number": 1,  "label": "GK", "x": 0.08, "y": 0.50, "color": "#4488ff" },
+        { "id": "fb-h1", "teamSide": "home", "number": 11, "label": "LW", "x": 0.76, "y": 0.08, "color": "#4488ff" },
+        { "id": "fb-h2", "teamSide": "home", "number": 7,  "label": "LB", "x": 0.58, "y": 0.28, "color": "#4488ff" },
+        { "id": "fb-h3", "teamSide": "home", "number": 10, "label": "CB", "x": 0.63, "y": 0.45, "color": "#4488ff" },
+        { "id": "fb-h4", "teamSide": "home", "number": 8,  "label": "RB", "x": 0.58, "y": 0.72, "color": "#4488ff" },
+        { "id": "fb-h5", "teamSide": "home", "number": 14, "label": "RW", "x": 0.76, "y": 0.92, "color": "#4488ff" },
+        { "id": "fb-h6", "teamSide": "home", "number": 9,  "label": "PV", "x": 0.74, "y": 0.50, "color": "#4488ff" },
+        { "id": "fb-a0", "teamSide": "away", "number": 1,  "label": "GK", "x": 0.96, "y": 0.50, "color": "#ff4444" },
+        { "id": "fb-a1", "teamSide": "away", "number": 11, "label": "LE", "x": 0.85, "y": 0.22, "color": "#ff4444" },
+        { "id": "fb-a2", "teamSide": "away", "number": 7,  "label": "LH", "x": 0.87, "y": 0.36, "color": "#ff4444" },
+        { "id": "fb-a3", "teamSide": "away", "number": 5,  "label": "LC", "x": 0.85, "y": 0.46, "color": "#ff4444" },
+        { "id": "fb-a4", "teamSide": "away", "number": 6,  "label": "RC", "x": 0.83, "y": 0.55, "color": "#ff4444" },
+        { "id": "fb-a5", "teamSide": "away", "number": 8,  "label": "RH", "x": 0.85, "y": 0.70, "color": "#ff4444" },
+        { "id": "fb-a6", "teamSide": "away", "number": 14, "label": "RE", "x": 0.88, "y": 0.82, "color": "#ff4444" }
+      ],
+      "ball": { "x": 0.63, "y": 0.45 },
+      "annotations": [
+        { "id": "a1", "type": "arrow", "points": [{"x": 0.63, "y": 0.45}, {"x": 0.78, "y": 0.08}], "color": "#ff8800", "strokeWidth": 3, "dashed": false },
+        { "id": "a2", "type": "arrow", "points": [{"x": 0.63, "y": 0.45}, {"x": 0.75, "y": 0.50}], "color": "#ff8800", "strokeWidth": 3, "dashed": false },
+        { "id": "a3", "type": "zone", "x": 0.74, "y": 0.36, "width": 0.14, "height": 0.30, "color": "#44bb44", "opacity": 0.20 }
+      ]
+    },
+    {
+      "id": "fb-f5",
+      "players": [
+        { "id": "fb-h0", "teamSide": "home", "number": 1,  "label": "GK", "x": 0.08, "y": 0.50, "color": "#4488ff" },
+        { "id": "fb-h1", "teamSide": "home", "number": 11, "label": "LW", "x": 0.80, "y": 0.08, "color": "#4488ff" },
+        { "id": "fb-h2", "teamSide": "home", "number": 7,  "label": "LB", "x": 0.65, "y": 0.28, "color": "#4488ff" },
+        { "id": "fb-h3", "teamSide": "home", "number": 10, "label": "CB", "x": 0.68, "y": 0.45, "color": "#4488ff" },
+        { "id": "fb-h4", "teamSide": "home", "number": 8,  "label": "RB", "x": 0.65, "y": 0.72, "color": "#4488ff" },
+        { "id": "fb-h5", "teamSide": "home", "number": 14, "label": "RW", "x": 0.80, "y": 0.92, "color": "#4488ff" },
+        { "id": "fb-h6", "teamSide": "home", "number": 9,  "label": "PV", "x": 0.82, "y": 0.48, "color": "#4488ff" },
+        { "id": "fb-a0", "teamSide": "away", "number": 1,  "label": "GK", "x": 0.96, "y": 0.50, "color": "#ff4444" },
+        { "id": "fb-a1", "teamSide": "away", "number": 11, "label": "LE", "x": 0.87, "y": 0.15, "color": "#ff4444" },
+        { "id": "fb-a2", "teamSide": "away", "number": 7,  "label": "LH", "x": 0.86, "y": 0.32, "color": "#ff4444" },
+        { "id": "fb-a3", "teamSide": "away", "number": 5,  "label": "LC", "x": 0.72, "y": 0.45, "color": "#ff4444" },
+        { "id": "fb-a4", "teamSide": "away", "number": 6,  "label": "RC", "x": 0.72, "y": 0.55, "color": "#ff4444" },
+        { "id": "fb-a5", "teamSide": "away", "number": 8,  "label": "RH", "x": 0.86, "y": 0.68, "color": "#ff4444" },
+        { "id": "fb-a6", "teamSide": "away", "number": 14, "label": "RE", "x": 0.72, "y": 0.82, "color": "#ff4444" }
+      ],
+      "ball": { "x": 0.80, "y": 0.08 },
+      "annotations": [
+        { "id": "a1", "type": "zone", "x": 0.82, "y": 0.36, "width": 0.12, "height": 0.26, "color": "#44bb44", "opacity": 0.22 }
+      ]
+    },
+    {
+      "id": "fb-f6",
+      "players": [
+        { "id": "fb-h0", "teamSide": "home", "number": 1,  "label": "GK", "x": 0.08, "y": 0.50, "color": "#4488ff" },
+        { "id": "fb-h1", "teamSide": "home", "number": 11, "label": "LW", "x": 0.88, "y": 0.08, "color": "#4488ff" },
+        { "id": "fb-h2", "teamSide": "home", "number": 7,  "label": "LB", "x": 0.68, "y": 0.28, "color": "#4488ff" },
+        { "id": "fb-h3", "teamSide": "home", "number": 10, "label": "CB", "x": 0.72, "y": 0.45, "color": "#4488ff" },
+        { "id": "fb-h4", "teamSide": "home", "number": 8,  "label": "RB", "x": 0.68, "y": 0.72, "color": "#4488ff" },
+        { "id": "fb-h5", "teamSide": "home", "number": 14, "label": "RW", "x": 0.82, "y": 0.92, "color": "#4488ff" },
+        { "id": "fb-h6", "teamSide": "home", "number": 9,  "label": "PV", "x": 0.86, "y": 0.45, "color": "#4488ff" },
+        { "id": "fb-a0", "teamSide": "away", "number": 1,  "label": "GK", "x": 0.96, "y": 0.44, "color": "#ff4444" },
+        { "id": "fb-a1", "teamSide": "away", "number": 11, "label": "LE", "x": 0.89, "y": 0.18, "color": "#ff4444" },
+        { "id": "fb-a2", "teamSide": "away", "number": 7,  "label": "LH", "x": 0.87, "y": 0.35, "color": "#ff4444" },
+        { "id": "fb-a3", "teamSide": "away", "number": 5,  "label": "LC", "x": 0.80, "y": 0.46, "color": "#ff4444" },
+        { "id": "fb-a4", "teamSide": "away", "number": 6,  "label": "RC", "x": 0.80, "y": 0.54, "color": "#ff4444" },
+        { "id": "fb-a5", "teamSide": "away", "number": 8,  "label": "RH", "x": 0.87, "y": 0.65, "color": "#ff4444" },
+        { "id": "fb-a6", "teamSide": "away", "number": 14, "label": "RE", "x": 0.80, "y": 0.80, "color": "#ff4444" }
+      ],
+      "ball": { "x": 0.92, "y": 0.10 },
+      "annotations": [
+        { "id": "a1", "type": "arrow", "points": [{"x": 0.88, "y": 0.08}, {"x": 0.97, "y": 0.43}], "color": "#ff8800", "strokeWidth": 3, "dashed": false }
+      ]
+    }
+  ]
+}

@@ -9,9 +9,10 @@ export interface PlayerTokenProps {
   isSelected: boolean
   onSelect: (id: ID) => void
   onDragEnd: (id: ID, normX: number, normY: number) => void
+  onDoubleClick?: (id: ID, pixelX: number, pixelY: number, label: string) => void
 }
 
-const BASE_RADIUS = 20
+const BASE_RADIUS = 12
 
 function clampNorm(value: number): number {
   return Math.min(1, Math.max(0, value))
@@ -23,6 +24,7 @@ export default function PlayerToken({
   isSelected,
   onSelect,
   onDragEnd,
+  onDoubleClick,
 }: PlayerTokenProps) {
   const r = BASE_RADIUS * scale.scaleFactor
   const fontSize = Math.round(14 * scale.scaleFactor)
@@ -39,6 +41,15 @@ export default function PlayerToken({
 
   const handleClick = () => onSelect(player.id)
 
+  const handleDoubleClick = () => {
+    onDoubleClick?.(
+      player.id,
+      scale.toPixelX(player.x),
+      scale.toPixelY(player.y),
+      player.label,
+    )
+  }
+
   return (
     <Group
       x={scale.toPixelX(player.x)}
@@ -47,17 +58,19 @@ export default function PlayerToken({
       onDragEnd={handleDragEnd}
       onClick={handleClick}
       onTap={handleClick}
+      onDblClick={handleDoubleClick}
+      onDblTap={handleDoubleClick}
     >
       <Circle radius={r} fill={player.color} stroke={strokeColor} strokeWidth={strokeWidth} />
       <Text
         x={-r}
-        y={-fontSize * 0.5}
+        y={-fontSize * 0.6}
         width={r * 2}
-        height={fontSize}
-        text={String(player.number)}
+        height={fontSize * 1.2}
+        text={player.label}
         fill="#FFFFFF"
         fontStyle="bold"
-        fontSize={fontSize}
+        fontSize={Math.round(fontSize * 0.85)}
         align="center"
         verticalAlign="middle"
         listening={false}

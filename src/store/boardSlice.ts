@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
+import { nanoid } from 'nanoid'
 import type {
   PlayerModel,
   BallModel,
@@ -14,12 +15,13 @@ import type {
 
 type Snapshot = {
   players: PlayerModel[]
+  balls: BallModel[]
   annotations: Annotation[]
 }
 
 export interface BoardStoreState {
   players: PlayerModel[]
-  ball: BallModel | null
+  balls: BallModel[]
   annotations: Annotation[]
   activeTool: DrawingToolType
   selectedId: ID | null
@@ -33,9 +35,10 @@ export interface BoardStoreState {
   addPlayer: (player: PlayerModel) => void
   updatePlayer: (id: ID, patch: Partial<PlayerModel>) => void
   removePlayer: (id: ID) => void
-  placeBall: (x: number, y: number) => void
-  moveBall: (x: number, y: number) => void
-  removeBall: () => void
+  addBall: (x: number, y: number, color?: string) => void
+  moveBall: (id: ID, x: number, y: number) => void
+  updateBall: (id: ID, patch: Partial<BallModel>) => void
+  removeBall: (id: ID) => void
   addAnnotation: (ann: Annotation) => void
   updateAnnotation: (id: ID, patch: Partial<Annotation>) => void
   removeAnnotation: (id: ID) => void
@@ -51,24 +54,18 @@ export interface BoardStoreState {
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const MAX_UNDO_STEPS = 50
+const DEFAULT_BALL_COLOR = '#b0b0b0'
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-/**
- * Returns a shallow snapshot of the mutable parts of the board state.
- * Called *before* applying a mutation so the old state can be restored.
- */
 function snapshot(state: BoardStoreState): Snapshot {
   return {
     players: state.players.map((p) => ({ ...p })),
+    balls: state.balls.map((b) => ({ ...b })),
     annotations: state.annotations.map((a) => ({ ...a })),
   }
 }
 
-/**
- * Pushes `snap` onto `past`, enforcing MAX_UNDO_STEPS, and clears `future`.
- * Must be called on the draft inside an immer producer.
- */
 function pushUndoCheckpoint(draft: BoardStoreState, snap: Snapshot): void {
   draft.past.push(snap)
   if (draft.past.length > MAX_UNDO_STEPS) {
@@ -83,7 +80,7 @@ export const useBoardStore = create<BoardStoreState>()(
   immer((set) => ({
     // ── Initial state ──────────────────────────────────────────────────────
     players: [],
-    ball: null,
+    balls: [],
     annotations: [],
     activeTool: 'select',
     selectedId: null,
@@ -121,23 +118,40 @@ export const useBoardStore = create<BoardStoreState>()(
 
     // ── Ball actions ───────────────────────────────────────────────────────
 
-    placeBall(x, y) {
+    addBall(x, y, color) {
       set((draft) => {
-        draft.ball = { x, y }
+        const snap = snapshot(draft)
+        draft.balls.push({ id: nanoid(), x, y, color: color ?? DEFAULT_BALL_COLOR })
+        pushUndoCheckpoint(draft, snap)
       })
     },
 
-    moveBall(x, y) {
+    moveBall(id, x, y) {
       set((draft) => {
-        if (!draft.ball) return
-        draft.ball.x = x
-        draft.ball.y = y
+        const ball = draft.balls.find((b) => b.id === id)
+        if (!ball) return
+        ball.x = x
+        ball.y = y
       })
     },
 
-    removeBall() {
+    updateBall(id, patch) {
       set((draft) => {
-        draft.ball = null
+        const snap = snapshot(draft)
+        const ball = draft.balls.find((b) => b.id === id)
+        if (!ball) return
+        Object.assign(ball, patch)
+        pushUndoCheckpoint(draft, snap)
+      })
+    },
+
+    removeBall(id) {
+      set((draft) => {
+        const index = draft.balls.findIndex((b) => b.id === id)
+        if (index === -1) return
+        const snap = snapshot(draft)
+        draft.balls.splice(index, 1)
+        pushUndoCheckpoint(draft, snap)
       })
     },
 
@@ -197,9 +211,11 @@ export const useBoardStore = create<BoardStoreState>()(
         const previous = draft.past.pop()!
         draft.future.push({
           players: draft.players.map((p) => ({ ...p })),
+          balls: draft.balls.map((b) => ({ ...b })),
           annotations: draft.annotations.map((a) => ({ ...a })),
         })
         draft.players = previous.players
+        draft.balls = previous.balls
         draft.annotations = previous.annotations
       })
     },
@@ -210,9 +226,11 @@ export const useBoardStore = create<BoardStoreState>()(
         const next = draft.future.pop()!
         draft.past.push({
           players: draft.players.map((p) => ({ ...p })),
+          balls: draft.balls.map((b) => ({ ...b })),
           annotations: draft.annotations.map((a) => ({ ...a })),
         })
         draft.players = next.players
+        draft.balls = next.balls
         draft.annotations = next.annotations
       })
     },
@@ -222,7 +240,7 @@ export const useBoardStore = create<BoardStoreState>()(
     clearBoard() {
       set((draft) => {
         draft.players = []
-        draft.ball = null
+        draft.balls = []
         draft.annotations = []
         draft.past = []
         draft.future = []
@@ -234,7 +252,15 @@ export const useBoardStore = create<BoardStoreState>()(
     loadFrame(frame) {
       set((draft) => {
         draft.players = frame.players.map((p) => ({ ...p }))
-        draft.ball = frame.ball ? { ...frame.ball } : null
+        // Migration: old frames used ball: BallModel | null, new format uses balls: BallModel[]
+        if (frame.balls) {
+          draft.balls = frame.balls.map((b) => ({ ...b }))
+        } else {
+          const oldBall = (frame as unknown as { ball?: { x: number; y: number } }).ball
+          draft.balls = oldBall
+            ? [{ id: nanoid(), x: oldBall.x, y: oldBall.y, color: DEFAULT_BALL_COLOR }]
+            : []
+        }
         draft.annotations = frame.annotations.map((a) => ({ ...a }))
         draft.past = []
         draft.future = []

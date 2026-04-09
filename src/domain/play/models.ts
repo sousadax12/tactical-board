@@ -84,7 +84,7 @@ export type Annotation =
 export interface PlayFrame {
   id: ID
   players: PlayerModel[]
-  ball: BallModel | null
+  balls: BallModel[]
   annotations: Annotation[]
 }
 
@@ -104,10 +104,12 @@ export interface Play {
 // ─── Ball ─────────────────────────────────────────────────────────────────────
 
 export interface BallModel {
+  id: ID
   /** Normalized x position [0..1] */
   x: number
   /** Normalized y position [0..1] */
   y: number
+  color: string
 }
 
 // ─── Active Board State ────────────────────────────────────────────────────────
@@ -115,8 +117,8 @@ export interface BallModel {
 export interface BoardState {
   /** Players currently on the board */
   players: PlayerModel[]
-  /** Ball on the board, or null if not placed */
-  ball: BallModel | null
+  /** Balls on the board */
+  balls: BallModel[]
   /** Annotations drawn on the board */
   annotations: Annotation[]
   /** Which drawing tool is selected */

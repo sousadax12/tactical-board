@@ -1,6 +1,10 @@
 import React from 'react'
+import Konva from 'konva'
 import { useBoardStore, useAnimationStore } from '../../store'
 import type { DrawingToolType } from '../../domain/play/models'
+import ExportMenu from '../export/ExportMenu'
+import TemplatesPanel from '../library/TemplatesPanel'
+import LibraryPanel from '../library/LibraryPanel'
 
 interface ToolDef {
   tool: DrawingToolType
@@ -94,9 +98,10 @@ const styles = {
 
 interface ToolbarProps {
   onEnterViewMode?: () => void
+  stageRef?: React.RefObject<Konva.Stage | null>
 }
 
-export default function Toolbar({ onEnterViewMode }: ToolbarProps): React.ReactElement {
+export default function Toolbar({ onEnterViewMode, stageRef }: ToolbarProps): React.ReactElement {
   const activeTool = useBoardStore((s) => s.activeTool)
   const setActiveTool = useBoardStore((s) => s.setActiveTool)
   const undo = useBoardStore((s) => s.undo)
@@ -198,6 +203,17 @@ export default function Toolbar({ onEnterViewMode }: ToolbarProps): React.ReactE
             <span style={styles.icon}>⛶</span>
             <span>View</span>
           </button>
+        </>
+      )}
+
+      <div style={styles.divider} />
+      <TemplatesPanel />
+      <LibraryPanel />
+
+      {stageRef && (
+        <>
+          <div style={styles.divider} />
+          <ExportMenu stageRef={stageRef} />
         </>
       )}
     </div>

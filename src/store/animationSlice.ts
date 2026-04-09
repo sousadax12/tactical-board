@@ -31,7 +31,7 @@ export const useAnimationStore = create<AnimationStoreState>()(
     frames: [],
     currentFrameIndex: 0,
     isPlaying: false,
-    fps: 2,
+    fps: 1,
     loop: true,
 
     // ── Frame actions ────────────────────────────────────────────────────────

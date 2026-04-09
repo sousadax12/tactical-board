@@ -7,22 +7,25 @@ import BallToken from './BallToken'
 
 export interface PlayerLayerProps {
   scale: CourtScale
+  onStartEdit: (id: ID, pixelX: number, pixelY: number, label: string) => void
 }
 
-export default function PlayerLayer({ scale }: PlayerLayerProps) {
+export default function PlayerLayer({ scale, onStartEdit }: PlayerLayerProps) {
   const players = useBoardStore((s) => s.players)
-  const ball = useBoardStore((s) => s.ball)
+  const balls = useBoardStore((s) => s.balls)
   const selectedId = useBoardStore((s) => s.selectedId)
   const updatePlayer = useBoardStore((s) => s.updatePlayer)
   const setSelectedId = useBoardStore((s) => s.setSelectedId)
   const moveBall = useBoardStore((s) => s.moveBall)
 
-  const handleSelect = (id: ID) => {
-    setSelectedId(id)
+  const handleSelect = (id: ID) => setSelectedId(id)
+
+  const handlePlayerDragEnd = (id: ID, normX: number, normY: number) => {
+    updatePlayer(id, { x: normX, y: normY })
   }
 
-  const handleDragEnd = (id: ID, normX: number, normY: number) => {
-    updatePlayer(id, { x: normX, y: normY })
+  const handleBallDragEnd = (id: ID, normX: number, normY: number) => {
+    moveBall(id, normX, normY)
   }
 
   return (
@@ -34,16 +37,20 @@ export default function PlayerLayer({ scale }: PlayerLayerProps) {
           scale={scale}
           isSelected={selectedId === player.id}
           onSelect={handleSelect}
-          onDragEnd={handleDragEnd}
+          onDragEnd={handlePlayerDragEnd}
+          onDoubleClick={onStartEdit}
         />
       ))}
-      {ball && (
+      {balls.map((ball) => (
         <BallToken
+          key={ball.id}
           ball={ball}
           scale={scale}
-          onDragEnd={(nx, ny) => moveBall(nx, ny)}
+          isSelected={selectedId === ball.id}
+          onSelect={handleSelect}
+          onDragEnd={handleBallDragEnd}
         />
-      )}
+      ))}
     </Layer>
   )
 }

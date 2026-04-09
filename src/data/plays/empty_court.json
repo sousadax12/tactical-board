@@ -1,0 +1,16 @@
+{
+  "id": "template-empty-court",
+  "name": "Empty Court",
+  "description": "A blank handball court to start fresh",
+  "createdAt": 1700000000000,
+  "updatedAt": 1700000000000,
+  "tags": ["template"],
+  "frames": [
+    {
+      "id": "frame-empty-1",
+      "players": [],
+      "ball": null,
+      "annotations": []
+    }
+  ]
+}

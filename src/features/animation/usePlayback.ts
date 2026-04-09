@@ -25,17 +25,20 @@ function lerpPlayers(
   })
 }
 
-function lerpBall(
-  current: BallModel | null,
-  next: BallModel | null,
+function lerpBalls(
+  current: BallModel[],
+  next: BallModel[],
   t: number,
-): BallModel | null {
-  if (!current) return null
-  if (!next) return current
-  return {
-    x: lerp(current.x, next.x, t),
-    y: lerp(current.y, next.y, t),
-  }
+): BallModel[] {
+  return current.map((ball) => {
+    const nextBall = next.find((b) => b.id === ball.id)
+    if (!nextBall) return ball
+    return {
+      ...ball,
+      x: lerp(ball.x, nextBall.x, t),
+      y: lerp(ball.y, nextBall.y, t),
+    }
+  })
 }
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
@@ -132,7 +135,7 @@ export function usePlayback(): void {
       const interpolatedFrame: PlayFrame = {
         id: currentFrame.id,
         players: lerpPlayers(currentFrame.players, nextFrame.players, t),
-        ball: lerpBall(currentFrame.ball, nextFrame.ball, t),
+        balls: lerpBalls(currentFrame.balls ?? [], nextFrame.balls ?? [], t),
         annotations: currentFrame.annotations,
       }
 

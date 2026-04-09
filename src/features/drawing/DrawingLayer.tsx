@@ -36,6 +36,8 @@ export default function DrawingLayer({ scale }: DrawingLayerProps): React.ReactE
 
   // Track zone rect start point in a ref to avoid stale closure issues
   const zoneStartRef = useRef<Point | null>(null)
+  // Track last tap time to suppress the browser's delayed click after touchend
+  const lastTapTimeRef = useRef<number>(0)
 
   // ── Keyboard: delete selected annotation ──────────────────────────────────
   const handleKeyDown = useCallback(
@@ -55,8 +57,8 @@ export default function DrawingLayer({ scale }: DrawingLayerProps): React.ReactE
 
   // ── Stage pointer event helpers ───────────────────────────────────────────
 
-  /** Returns normalised coordinates from a Konva stage event */
-  function toNorm(e: Konva.KonvaEventObject<MouseEvent>): Point {
+  /** Returns normalised coordinates from a Konva stage event (mouse or touch) */
+  function toNorm(e: Konva.KonvaEventObject<MouseEvent | TouchEvent>): Point {
     const stage = e.target.getStage()
     if (!stage) return { x: 0, y: 0 }
     const pos = stage.getPointerPosition()
@@ -64,12 +66,21 @@ export default function DrawingLayer({ scale }: DrawingLayerProps): React.ReactE
     return { x: scale.toNormX(pos.x), y: scale.toNormY(pos.y) }
   }
 
-  // ── Layer click (arrow / line / text / select-deselect) ───────────────────
-  function handleLayerClick(e: Konva.KonvaEventObject<MouseEvent>): void {
-    // Ignore the synthetic second-click that Konva fires as part of a dblclick
-    if (e.evt.detail === 2) return
+  // ── Shared click / tap logic (arrow / line / text / select) ───────────────
+  function processClickOrTap(
+    e: Konva.KonvaEventObject<MouseEvent | TouchEvent>,
+    isTouch: boolean,
+  ): void {
+    if (isTouch) {
+      // Record tap time so the subsequent browser click (fired ~300 ms later) is ignored
+      lastTapTimeRef.current = Date.now()
+    } else {
+      // Skip mouse click that fires shortly after a tap on mobile
+      if (Date.now() - lastTapTimeRef.current < 500) return
+      // Ignore the synthetic second-click Konva fires as part of a dblclick
+      if ((e.evt as MouseEvent).detail === 2) return
+    }
 
-    // Only process clicks that land on the background rect (not on annotations)
     const clickedOnEmpty =
       e.target === (e.target.getStage() as unknown) ||
       (e.target as unknown as { name: () => string }).name() === 'drawing-bg'
@@ -102,10 +113,10 @@ export default function DrawingLayer({ scale }: DrawingLayerProps): React.ReactE
       const current = useBoardStore.getState().drawingPoints
 
       if (current.length === 0) {
-        // First click: set start point and wait for second click
+        // First tap: set start point and wait for second tap
         setDrawingPoints([norm])
       } else {
-        // Second click: finalize the annotation
+        // Second tap: finalize the annotation
         const pts = [...current, norm]
         if (activeTool === 'arrow') {
           const ann: ArrowAnnotation = {
@@ -133,20 +144,28 @@ export default function DrawingLayer({ scale }: DrawingLayerProps): React.ReactE
     }
   }
 
-  // ── Double-click: cancel in-progress arrow / line drawing ─────────────────
+  function handleLayerClick(e: Konva.KonvaEventObject<MouseEvent>): void {
+    processClickOrTap(e, false)
+  }
+
+  function handleLayerTap(e: Konva.KonvaEventObject<TouchEvent>): void {
+    processClickOrTap(e as unknown as Konva.KonvaEventObject<MouseEvent | TouchEvent>, true)
+  }
+
+  // ── Double-click / double-tap: cancel in-progress arrow / line drawing ─────
   function handleLayerDblClick(): void {
     if (activeTool === 'arrow' || activeTool === 'line') {
       setDrawingPoints([])
     }
   }
 
-  // ── Zone: mousedown / mouseup ─────────────────────────────────────────────
-  function handleMouseDown(e: Konva.KonvaEventObject<MouseEvent>): void {
+  // ── Zone: shared start / end for mouse and touch ──────────────────────────
+  function processZoneStart(e: Konva.KonvaEventObject<MouseEvent | TouchEvent>): void {
     if (activeTool !== 'zone') return
     zoneStartRef.current = toNorm(e)
   }
 
-  function handleMouseUp(e: Konva.KonvaEventObject<MouseEvent>): void {
+  function processZoneEnd(e: Konva.KonvaEventObject<MouseEvent | TouchEvent>): void {
     if (activeTool !== 'zone') return
     const start = zoneStartRef.current
     if (!start) return
@@ -158,7 +177,7 @@ export default function DrawingLayer({ scale }: DrawingLayerProps): React.ReactE
     const width = Math.abs(end.x - start.x)
     const height = Math.abs(end.y - start.y)
 
-    // Ignore tiny drags (accidental clicks)
+    // Ignore tiny drags (accidental taps)
     if (width < 0.01 || height < 0.01) return
 
     const ann: ZoneAnnotation = {
@@ -174,6 +193,22 @@ export default function DrawingLayer({ scale }: DrawingLayerProps): React.ReactE
     addAnnotation(ann)
   }
 
+  function handleMouseDown(e: Konva.KonvaEventObject<MouseEvent>): void {
+    processZoneStart(e)
+  }
+
+  function handleMouseUp(e: Konva.KonvaEventObject<MouseEvent>): void {
+    processZoneEnd(e)
+  }
+
+  function handleTouchStart(e: Konva.KonvaEventObject<TouchEvent>): void {
+    processZoneStart(e as unknown as Konva.KonvaEventObject<MouseEvent | TouchEvent>)
+  }
+
+  function handleTouchEnd(e: Konva.KonvaEventObject<TouchEvent>): void {
+    processZoneEnd(e as unknown as Konva.KonvaEventObject<MouseEvent | TouchEvent>)
+  }
+
   // ── Preview line while building arrow/line ────────────────────────────────
   const sf = scale.scaleFactor
   const previewPoints =
@@ -184,9 +219,13 @@ export default function DrawingLayer({ scale }: DrawingLayerProps): React.ReactE
   return (
     <Layer
       onClick={handleLayerClick}
+      onTap={handleLayerTap}
       onDblClick={handleLayerDblClick}
+      onDblTap={handleLayerDblClick}
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
     >
       {/* Full-coverage transparent rect so the layer captures all pointer events */}
       <Rect

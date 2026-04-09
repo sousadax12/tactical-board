@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid'
-import type { CSSProperties } from 'react'
+import type { CSSProperties, ChangeEvent } from 'react'
 import type { PlayerModel, TeamSide } from '../../domain/play/models'
 import { useBoardStore } from '../../store'
 
@@ -11,16 +11,13 @@ const DEFAULT_POSITIONS: Record<TeamSide, { x: number; y: number }> = {
   away: { x: 0.75, y: 0.5 },
 }
 
-const MAX_PLAYERS_PER_TEAM = 7
-
 function getNextNumber(players: PlayerModel[], teamSide: TeamSide): number {
   const teamNumbers = players
     .filter((p) => p.teamSide === teamSide)
     .map((p) => p.number)
-  for (let n = 1; n <= MAX_PLAYERS_PER_TEAM; n++) {
+  for (let n = 1; ; n++) {
     if (!teamNumbers.includes(n)) return n
   }
-  return teamNumbers.length + 1
 }
 
 // ─── Styles ──────────────────────────────────────────────────────────────────
@@ -55,21 +52,11 @@ const headingStyle: CSSProperties = {
 const playerRowStyle: CSSProperties = {
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'space-between',
-  padding: '4px 8px',
+  gap: '4px',
+  padding: '4px 6px',
   background: 'rgba(255,255,255,0.05)',
   borderRadius: '4px',
 }
-
-const dotStyle = (color: string): CSSProperties => ({
-  display: 'inline-block',
-  width: '10px',
-  height: '10px',
-  borderRadius: '50%',
-  background: color,
-  marginRight: '8px',
-  flexShrink: 0,
-})
 
 const removeBtnStyle: CSSProperties = {
   background: 'none',
@@ -78,7 +65,9 @@ const removeBtnStyle: CSSProperties = {
   cursor: 'pointer',
   fontSize: '16px',
   lineHeight: 1,
-  padding: '0 4px',
+  padding: '0 2px',
+  marginLeft: 'auto',
+  flexShrink: 0,
 }
 
 const addBtnStyle = (color: string): CSSProperties => ({
@@ -93,7 +82,28 @@ const addBtnStyle = (color: string): CSSProperties => ({
   alignSelf: 'flex-start',
 })
 
-// ─── Sub-component ────────────────────────────────────────────────────────────
+const colorPickerStyle: CSSProperties = {
+  width: '22px',
+  height: '22px',
+  padding: 0,
+  border: '1px solid #555',
+  borderRadius: '3px',
+  cursor: 'pointer',
+  flexShrink: 0,
+}
+
+const labelInputStyle: CSSProperties = {
+  flex: 1,
+  background: 'rgba(255,255,255,0.08)',
+  border: '1px solid #444',
+  borderRadius: '3px',
+  color: '#e0e0e0',
+  fontSize: '12px',
+  padding: '2px 5px',
+  minWidth: 0,
+}
+
+// ─── Team section ─────────────────────────────────────────────────────────────
 
 interface TeamSectionProps {
   label: string
@@ -104,15 +114,15 @@ interface TeamSectionProps {
 function TeamSection({ label, teamSide, color }: TeamSectionProps) {
   const players = useBoardStore((s) => s.players)
   const addPlayer = useBoardStore((s) => s.addPlayer)
+  const updatePlayer = useBoardStore((s) => s.updatePlayer)
   const removePlayer = useBoardStore((s) => s.removePlayer)
 
   const teamPlayers = players.filter((p) => p.teamSide === teamSide)
-  const canAdd = teamPlayers.length < MAX_PLAYERS_PER_TEAM
 
   const handleAdd = () => {
-    if (!canAdd) return
     const number = getNextNumber(players, teamSide)
     const { x, y } = DEFAULT_POSITIONS[teamSide]
+    const lastColor = teamPlayers.length > 0 ? teamPlayers[teamPlayers.length - 1].color : color
     const newPlayer: PlayerModel = {
       id: nanoid(),
       teamSide,
@@ -120,25 +130,39 @@ function TeamSection({ label, teamSide, color }: TeamSectionProps) {
       label: `${teamSide === 'home' ? 'H' : 'A'}${number}`,
       x,
       y,
-      color,
+      color: lastColor,
     }
     addPlayer(newPlayer)
   }
 
   return (
     <div style={sectionStyle}>
-      <div style={{ ...headingStyle, color }}>
-        {label}
-      </div>
+      <div style={{ ...headingStyle, color }}>{label}</div>
       {teamPlayers.length === 0 && (
         <div style={{ color: '#666', fontSize: '12px' }}>No players added</div>
       )}
       {teamPlayers.map((p) => (
         <div key={p.id} style={playerRowStyle}>
-          <span>
-            <span style={dotStyle(color)} />
-            #{p.number} — {p.label}
-          </span>
+          <input
+            type="color"
+            value={p.color}
+            style={colorPickerStyle}
+            title="Pick color"
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              updatePlayer(p.id, { color: e.target.value })
+            }
+          />
+          <span style={{ fontSize: '11px', color: '#888', flexShrink: 0 }}>#{p.number}</span>
+          <input
+            type="text"
+            value={p.label}
+            style={labelInputStyle}
+            maxLength={4}
+            title="Edit label"
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              updatePlayer(p.id, { label: e.target.value })
+            }
+          />
           <button
             style={removeBtnStyle}
             onClick={() => removePlayer(p.id)}
@@ -151,7 +175,6 @@ function TeamSection({ label, teamSide, color }: TeamSectionProps) {
       <button
         style={addBtnStyle(color)}
         onClick={handleAdd}
-        disabled={!canAdd}
         aria-label={`Add ${label} player`}
       >
         + Add Player
@@ -163,27 +186,45 @@ function TeamSection({ label, teamSide, color }: TeamSectionProps) {
 // ─── Ball section ─────────────────────────────────────────────────────────────
 
 function BallSection() {
-  const ball = useBoardStore((s) => s.ball)
-  const placeBall = useBoardStore((s) => s.placeBall)
+  const balls = useBoardStore((s) => s.balls)
+  const addBall = useBoardStore((s) => s.addBall)
+  const updateBall = useBoardStore((s) => s.updateBall)
   const removeBall = useBoardStore((s) => s.removeBall)
 
   return (
     <div style={sectionStyle}>
-      <div style={{ ...headingStyle, color: '#e0e0e0' }}>Ball</div>
-      {ball ? (
-        <div style={playerRowStyle}>
-          <span>⚽ On court</span>
-          <button style={removeBtnStyle} onClick={removeBall} aria-label="Remove ball">×</button>
-        </div>
-      ) : (
-        <button
-          style={addBtnStyle('#555')}
-          onClick={() => placeBall(0.5, 0.5)}
-          aria-label="Place ball"
-        >
-          + Place Ball
-        </button>
+      <div style={{ ...headingStyle, color: '#e0e0e0' }}>Balls</div>
+      {balls.length === 0 && (
+        <div style={{ color: '#666', fontSize: '12px' }}>No balls placed</div>
       )}
+      {balls.map((ball, index) => (
+        <div key={ball.id} style={playerRowStyle}>
+          <input
+            type="color"
+            value={ball.color}
+            style={colorPickerStyle}
+            title="Pick color"
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              updateBall(ball.id, { color: e.target.value })
+            }
+          />
+          <span style={{ fontSize: '12px' }}>Ball {index + 1}</span>
+          <button
+            style={removeBtnStyle}
+            onClick={() => removeBall(ball.id)}
+            aria-label={`Remove ball ${index + 1}`}
+          >
+            ×
+          </button>
+        </div>
+      ))}
+      <button
+        style={addBtnStyle('#555')}
+        onClick={() => addBall(0.5, 0.5, balls.length > 0 ? balls[balls.length - 1].color : undefined)}
+        aria-label="Add ball"
+      >
+        + Add Ball
+      </button>
     </div>
   )
 }
